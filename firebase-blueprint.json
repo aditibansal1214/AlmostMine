@@ -1,0 +1,220 @@
+{
+  "entities": {
+    "UserPrivate": {
+      "title": "UserPrivate",
+      "description": "Private user account data including email, phone, and preferences. Restricted strictly to owner.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" }
+      },
+      "required": ["uid"]
+    },
+    "PublicProfile": {
+      "title": "PublicProfile",
+      "description": "Public-safe member profile visible to community peers.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "username": { "type": "string" },
+        "bio": { "type": "string" },
+        "locality": { "type": "string" },
+        "communityId": { "type": "string" }
+      },
+      "required": ["uid", "displayName", "username"]
+    },
+    "Listing": {
+      "title": "Listing",
+      "description": "Community item available to rent, lend, or swap.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "title": { "type": "string", "maxLength": 80 },
+        "category": { "type": "string" },
+        "condition": { "type": "string" },
+        "replacementValue": { "type": "number" },
+        "transactionType": { "type": "string" },
+        "pricePerDay": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["ownerId", "title", "category", "condition", "status"]
+    },
+    "LockedDay": {
+      "title": "LockedDay",
+      "description": "Calendar day lock preventing double-booking or marking owner block.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "type": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "bookingId": { "type": "string" }
+      },
+      "required": ["date", "type", "ownerId"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Request and rental exchange between owner and borrower.",
+      "type": "object",
+      "properties": {
+        "listingId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "borrowerId": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "days": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["listingId", "ownerId", "borrowerId", "startDate", "endDate", "status"]
+    },
+    "PublicActivity": {
+      "title": "PublicActivity",
+      "description": "Immutable public ledger event for completed exchanges and trust calculation.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "subjectUid": { "type": "string" },
+        "otherUid": { "type": "string" },
+        "listingId": { "type": "string" },
+        "bookingId": { "type": "string" }
+      },
+      "required": ["type", "subjectUid", "otherUid", "listingId", "bookingId"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Peer review after completed booking exchange.",
+      "type": "object",
+      "properties": {
+        "bookingId": { "type": "string" },
+        "reviewerId": { "type": "string" },
+        "revieweeId": { "type": "string" },
+        "rating": { "type": "number" },
+        "text": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["bookingId", "reviewerId", "revieweeId", "rating"]
+    },
+    "InAppNotification": {
+      "title": "InAppNotification",
+      "description": "In-app notifications for bookings, saved searches, and reviews.",
+      "type": "object",
+      "properties": {
+        "recipientId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["recipientId", "title", "message"]
+    },
+    "Favourite": {
+      "title": "Favourite",
+      "description": "User favourite item bookmarks.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "listingId": { "type": "string" }
+      },
+      "required": ["userId", "listingId"]
+    },
+    "SavedSearch": {
+      "title": "SavedSearch",
+      "description": "User saved search alerts.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "query": { "type": "string" },
+        "category": { "type": "string" }
+      },
+      "required": ["userId"]
+    },
+    "Wish": {
+      "title": "Wish",
+      "description": "Community item wishes.",
+      "type": "object",
+      "properties": {
+        "requesterId": { "type": "string" },
+        "itemName": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["requesterId", "itemName", "category", "status"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Global application configuration.",
+      "type": "object",
+      "properties": {
+        "showDemoListings": { "type": "boolean" },
+        "commissionPct": { "type": "number" },
+        "demoModeActive": { "type": "boolean" }
+      }
+    },
+    "DemoBatch": {
+      "title": "DemoBatch",
+      "description": "Metadata tracking seeded demo batches.",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string" },
+        "seededAt": { "type": "string" },
+        "itemCount": { "type": "number" }
+      },
+      "required": ["batchId", "itemCount"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserPrivate" },
+      "description": "Private user credentials and settings. Restricted strictly to owner."
+    },
+    "/publicProfiles/{userId}": {
+      "schema": { "$ref": "#/entities/PublicProfile" },
+      "description": "Public-safe profile information."
+    },
+    "/listings/{listingId}": {
+      "schema": { "$ref": "#/entities/Listing" },
+      "description": "Marketplace item listings."
+    },
+    "/listings/{listingId}/lockedDays/{dateStr}": {
+      "schema": { "$ref": "#/entities/LockedDay" },
+      "description": "Locks for booking dates or owner-blocked days."
+    },
+    "/bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "Exchange and booking requests between owner and borrower."
+    },
+    "/publicActivity/{eventId}": {
+      "schema": { "$ref": "#/entities/PublicActivity" },
+      "description": "Immutable ledger for verified community activity."
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Completed exchange ratings and reviews."
+    },
+    "/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/InAppNotification" },
+      "description": "In-app alerts and notifications."
+    },
+    "/favourites/{favId}": {
+      "schema": { "$ref": "#/entities/Favourite" },
+      "description": "User favourite bookmarks."
+    },
+    "/savedSearches/{searchId}": {
+      "schema": { "$ref": "#/entities/SavedSearch" },
+      "description": "Saved search notifications."
+    },
+    "/wishes/{wishId}": {
+      "schema": { "$ref": "#/entities/Wish" },
+      "description": "Community item wishes."
+    },
+    "/appConfig/{docId}": {
+      "schema": { "$ref": "#/entities/AppConfig" },
+      "description": "Application settings and flags."
+    },
+    "/demoBatches/{batchId}": {
+      "schema": { "$ref": "#/entities/DemoBatch" },
+      "description": "Demo seed tracking."
+    }
+  }
+}

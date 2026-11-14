@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="am-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#245A44" />
+      <stop offset="100%" stop-color="#163A2B" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#am-grad)"/>
+  <!-- Elegant geometric stylized AM monogram -->
+  <path d="M120 370 L195 150 L250 150 L325 370 L275 370 L256 310 L188 310 L170 370 Z M202 268 L242 268 L222 200 Z" fill="#FFFFFF"/>
+  <path d="M305 370 L345 150 L385 285 L425 150 L465 370 L425 370 L400 245 L372 370 Z" fill="#8FAE9B"/>
+  <circle cx="256" cy="115" r="14" fill="#C8793A"/>
+</svg>

@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #FAF7F2;
+  --surface: #FFFFFF;
+  --surface-2: #F3EEE5;
+  --ink: #1E2A24;
+  --ink-muted: #5B665F;
+  --border: #E2DACB;
+  --primary: #1F4D3A;
+  --primary-hover: #163A2B;
+  --on-primary: #FFFFFF;
+  --secondary: #8FAE9B;
+  --sand: #E9E1D3;
+  --accent: #C8793A;
+  --success: #2E7D4F;
+  --warning: #B7791F;
+  --danger: #B3382C;
+  --info: #2F6F8F;
+  --shadow-soft: 0 4px 20px -2px rgba(30, 42, 36, 0.05), 0 2px 6px -1px rgba(30, 42, 36, 0.03);
+}
+
+.dark {
+  --bg: #121A16;
+  --surface: #1A2420;
+  --surface-2: #222E29;
+  --ink: #EDEAE3;
+  --ink-muted: #A3AFA8;
+  --border: #2A3831;
+  --primary: #6FBF94;
+  --primary-hover: #82CBA4;
+  --on-primary: #0E1A14;
+  --secondary: #567566;
+  --sand: #2A3630;
+  --accent: #D98C4E;
+  --success: #4CAE73;
+  --warning: #D19438;
+  --danger: #D65445;
+  --info: #4E95B8;
+  --shadow-soft: 0 4px 24px -2px rgba(0, 0, 0, 0.35);
+}
+
+.high-contrast {
+  --border: #8A9890;
+  --ink-muted: #2E3A33;
+}
+
+.dark.high-contrast {
+  --border: #9EB0A7;
+  --ink-muted: #D1DCD6;
+}
+
+[data-text-size="large"] {
+  font-size: 112.5%;
+}
+
+[data-text-size="small"] {
+  font-size: 93.75%;
+}
+
+@theme {
+  --color-am-bg: var(--bg);
+  --color-am-surface: var(--surface);
+  --color-am-surface-2: var(--surface-2);
+  --color-am-ink: var(--ink);
+  --color-am-ink-muted: var(--ink-muted);
+  --color-am-border: var(--border);
+  --color-am-primary: var(--primary);
+  --color-am-primary-hover: var(--primary-hover);
+  --color-am-on-primary: var(--on-primary);
+  --color-am-secondary: var(--secondary);
+  --color-am-sand: var(--sand);
+  --color-am-accent: var(--accent);
+  --color-am-success: var(--success);
+  --color-am-warning: var(--warning);
+  --color-am-danger: var(--danger);
+  --color-am-info: var(--info);
+  --shadow-am-soft: var(--shadow-soft);
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --radius-am-input: 12px;
+  --radius-am-card: 16px;
+  --radius-am-sheet: 24px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--ink);
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Safe area insets for iOS notch and home bar */
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.safe-left {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+.safe-right {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

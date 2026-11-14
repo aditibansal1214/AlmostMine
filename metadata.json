@@ -1,0 +1,6 @@
+{
+  "name": "AlmostMine",
+  "description": "Own less. Access more. Community item sharing and rental web app & PWA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

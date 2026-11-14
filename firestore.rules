@@ -1,0 +1,161 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'aditibansal0503@gmail.com'
+      );
+    }
+
+    function isParty(ownerId, borrowerId) {
+      return isSignedIn() && (request.auth.uid == ownerId || request.auth.uid == borrowerId || isAdmin());
+    }
+
+    function isDemoResource() {
+      return resource != null && (resource.data.dataSource == 'demo' || resource.data.isDemo == true);
+    }
+
+    function isDemoRequest() {
+      return request.resource != null && request.resource.data.dataSource == 'demo' && request.resource.data.isDemo == true;
+    }
+
+    // Private user records (users/{uid})
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isDemoResource() || isAdmin();
+      allow write: if isOwner(userId) || isDemoRequest() || isDemoResource() || isAdmin();
+    }
+
+    // Public profiles (publicProfiles/{uid})
+    match /publicProfiles/{userId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId) || isDemoRequest() || isAdmin();
+      allow delete: if isDemoResource() || isAdmin();
+    }
+
+    // Usernames registry
+    match /usernames/{username} {
+      allow read: if true;
+      allow create: if (isSignedIn() && request.resource.data.uid == request.auth.uid) || isDemoRequest() || isAdmin();
+      allow delete: if isDemoResource() || isAdmin();
+    }
+
+    // Communities
+    match /communities/{communityId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Listings
+    match /listings/{listingId} {
+      allow read: if true;
+      allow create: if (isSignedIn() && request.resource.data.ownerId == request.auth.uid) || isDemoRequest() || isAdmin();
+      allow update: if (isSignedIn() && resource.data.ownerId == request.auth.uid) || isDemoRequest() || isDemoResource() || isAdmin();
+      allow delete: if (isSignedIn() && resource.data.ownerId == request.auth.uid) || isDemoResource() || isAdmin();
+
+      // Calendar date locks (listings/{id}/lockedDays/{dateStr})
+      match /lockedDays/{dateStr} {
+        allow read: if true;
+        allow create, update: if isSignedIn() || isDemoRequest() || isAdmin();
+        allow delete: if isSignedIn() || isDemoResource() || isAdmin();
+      }
+    }
+
+    // Bookings
+    match /bookings/{bookingId} {
+      allow read: if true;
+      allow create: if (isSignedIn() && request.resource.data.borrowerId == request.auth.uid) || isDemoRequest() || isAdmin();
+      allow update: if (isSignedIn() && isParty(resource.data.ownerId, resource.data.borrowerId)) || isDemoResource() || isAdmin();
+      allow delete: if isDemoResource() || isAdmin();
+
+      match /statusHistory/{eventId} {
+        allow read: if true;
+        allow create: if true;
+      }
+    }
+
+    // Immutable Public Activity Ledger
+    match /publicActivity/{eventId} {
+      allow read: if true;
+      allow create: if true;
+      allow delete: if isDemoResource() || isAdmin();
+    }
+
+    // Peer Reviews
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if (isSignedIn() && request.resource.data.reviewerId == request.auth.uid) || isDemoRequest() || isAdmin();
+      allow update: if (isSignedIn() && resource.data.reviewerId == request.auth.uid) || isDemoResource() || isAdmin();
+      allow delete: if isDemoResource() || isAdmin();
+    }
+
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow update, delete: if isDemoResource() || (isSignedIn() && resource.data.recipientId == request.auth.uid) || isAdmin();
+      allow create: if isSignedIn() || isDemoRequest() || isAdmin();
+    }
+
+    // Favourites
+    match /favourites/{favId} {
+      allow read: if true;
+      allow write: if isDemoRequest() || isDemoResource() || (
+        isSignedIn() && (
+          (resource == null && request.resource.data.userId == request.auth.uid) ||
+          (resource != null && resource.data.userId == request.auth.uid) ||
+          isAdmin()
+        )
+      );
+    }
+
+    // Saved Searches
+    match /savedSearches/{searchId} {
+      allow read: if true;
+      allow write: if isDemoRequest() || isDemoResource() || (
+        isSignedIn() && (
+          (resource == null && request.resource.data.userId == request.auth.uid) ||
+          (resource != null && resource.data.userId == request.auth.uid) ||
+          isAdmin()
+        )
+      );
+    }
+
+    // Wishes
+    match /wishes/{wishId} {
+      allow read: if true;
+      allow create: if (isSignedIn() && request.resource.data.requesterId == request.auth.uid) || isDemoRequest() || isAdmin();
+      allow update, delete: if (isSignedIn() && resource.data.requesterId == request.auth.uid) || isDemoResource() || isAdmin();
+    }
+
+    // Global Config & Demo Batches
+    match /appConfig/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /demoBatches/{batchId} {
+      allow read, write: if true;
+    }
+
+    // Admins
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.token.email == 'aditibansal0503@gmail.com';
+    }
+  }
+}
